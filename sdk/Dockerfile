@@ -11,7 +11,7 @@ ENV ANDROID_HOME=/opt/android-sdk-linux \
     LANGUAGE=en_US:en
 
 ENV ANDROID_SDK_ROOT=$ANDROID_HOME \
-    PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator
+    PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools
 
 RUN test -n "$command_line_tools" \
     && test -n "$command_line_tools_sha1" \
@@ -21,27 +21,12 @@ RUN test -n "$command_line_tools" \
         build-essential \
         curl \
         git \
-        jq \
         lcov \
-        lftp \
-        libasound2t64 \
-        libatk-bridge2.0-0 \
-        libgdk-pixbuf2.0-0 \
-        libglu1-mesa \
-        libgtk-3-0 \
-        libnspr4 \
-        libnss3-dev \
-        libpulse0 \
         libsqlite3-dev \
         libstdc++6 \
-        libxss1 \
-        libxtst6 \
         locales \
         openjdk-21-jdk \
         openssh-client \
-        ruby-bundler \
-        ruby-full \
-        software-properties-common \
         sqlite3 \
         sudo \
         unzip \
@@ -65,13 +50,8 @@ RUN test -n "$command_line_tools" \
     && touch /root/.android/repositories.cfg \
     && yes | sdkmanager --licenses >/dev/null \
     && sdkmanager "platform-tools" \
-    && wget -q -O /usr/bin/android-wait-for-emulator https://raw.githubusercontent.com/travis-ci/travis-cookbooks/master/community-cookbooks/android-sdk/files/default/android-wait-for-emulator \
-    && chmod +x /usr/bin/android-wait-for-emulator \
-    && git config --global user.email "support@cirrus-ci.org" \
-    && git config --global user.name "Cirrus CI"
-
-# The emulator is not available on linux/arm64.
-RUN if [ "$(uname -m)" = "x86_64" ]; then sdkmanager "emulator"; fi
+    && git config --global user.email "support@sst-ci.org" \
+    && git config --global user.name "SST CI"
 
 FROM tools AS sdk
 
