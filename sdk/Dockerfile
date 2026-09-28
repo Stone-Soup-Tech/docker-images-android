@@ -28,6 +28,8 @@ RUN test -n "$command_line_tools" \
         jq \
         openjdk-21-jdk \
         openssh-client \
+        ruby-full \
+        ruby-bundler \
         sqlite3 \
         sudo \
         unzip \
