@@ -36,19 +36,23 @@ RUN test -n "$command_line_tools" \
     && rm -rf /var/lib/apt/lists/* \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
-    && update-locale LANG=en_US.UTF-8 \
-    && cd /opt \
-    && wget -q "https://dl.google.com/android/repository/commandlinetools-linux-${command_line_tools}_latest.zip" -O android-sdk-tools.zip \
+    && update-locale LANG=en_US.UTF-8
+
+WORKDIR /opt
+
+RUN wget -q "https://dl.google.com/android/repository/commandlinetools-linux-${command_line_tools}_latest.zip" -O android-sdk-tools.zip \
     && echo "${command_line_tools_sha1}  android-sdk-tools.zip" | sha1sum --check - \
     && mkdir -p "$ANDROID_HOME/cmdline-tools" \
     && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME/cmdline-tools" \
     && mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest" \
     && rm android-sdk-tools.zip \
-    && chown -R root:root "$ANDROID_HOME" \
-    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && chown -R root:root "$ANDROID_HOME"
+
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && mkdir -p /root/.android \
-    && touch /root/.android/repositories.cfg \
-    && yes | sdkmanager --licenses >/dev/null \
+    && touch /root/.android/repositories.cfg
+
+RUN yes | sdkmanager --licenses >/dev/null \
     && sdkmanager "platform-tools" \
     && git config --global user.email "support@sst-ci.org" \
     && git config --global user.name "SST CI"
