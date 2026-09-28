@@ -1,9 +1,13 @@
 # Docker images with Android SDK
 
 [![Build Android images](https://github.com/Stone-Soup-Tech/docker-images-android/actions/workflows/build.yml/badge.svg)](https://github.com/Stone-Soup-Tech/docker-images-android/actions/workflows/build.yml)
+[![Publish Android images](https://github.com/Stone-Soup-Tech/docker-images-android/actions/workflows/publish.yml/badge.svg)](https://github.com/Stone-Soup-Tech/docker-images-android/actions/workflows/publish.yml)
 
-You can either [use it in CI](https://cirrus-ci.org/examples/#android) or run
-locally via Docker:
+This is a Stone Soup Tech fork of [cirruslabs/docker-images-android](https://github.com/cirruslabs/docker-images-android). The upstream repository stopped updating images starting May 1, 2026 due to Cirrus Labs winding down operations after an acquisition.
+
+Images are built with GitHub Actions and published to GitHub Container Registry.
+
+You can either [use it in CI](https://cirrus-ci.org/examples/#android) or run locally via Docker:
 
 ```console
 docker run --rm -it \
@@ -19,14 +23,11 @@ The example above mounts current working directory and runs a Gradle build.
 
 - `latest` and `<api>` contain the latest stable Android SDK platform and build tools.
 - `latest-ndk` and `<api>-ndk` additionally contain the latest stable Android NDK.
-- The standalone `tools` image is currently disabled; the SDK and NDK images still
-  use the internal command-line tools build stage.
+- The standalone `tools` image is currently disabled; the SDK and NDK images still use the internal command-line tools build stage.
 
-Images are published for `linux/amd64`. Android CLI and the Linux Android host
-tools are not currently distributed for ARM64 hosts.
+Images are published for `linux/amd64`. Android CLI and the Linux Android host tools are not currently distributed for ARM64 hosts.
 
-For reproducible builds, use an API tag such as `36` or `36-ndk`. The moving
-tags are updated after an automated version-update pull request is merged.
+For reproducible builds, use an API tag such as `36` or `36-ndk`. The moving tags are updated after an automated version-update pull request is merged.
 
 ## GitHub Container Registry
 
