@@ -22,7 +22,7 @@ The example above mounts current working directory and runs a Gradle build.
 - The standalone `tools` image is currently disabled; the SDK and NDK images still
   use the internal tools build stage.
 
-For reproducible builds, use an API tag such as `37.0` or `37.0-ndk`. The moving
+For reproducible builds, use an API tag such as `36` or `36-ndk`. The moving
 tags are updated after an automated version-update pull request is merged.
 
 ## GitHub Container Registry
