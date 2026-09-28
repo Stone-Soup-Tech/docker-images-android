@@ -52,9 +52,13 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && mkdir -p /root/.android \
     && touch /root/.android/repositories.cfg
 
-RUN yes | sdkmanager --licenses >/dev/null \
-    && sdkmanager "platform-tools" \
-    && git config --global user.email "support@sst-ci.org" \
+RUN curl -fsSL https://dl.google.com/android/cli/latest/linux_x86_64/install_root.sh -o /tmp/install-android-cli.sh \
+    && bash /tmp/install-android-cli.sh \
+    && rm /tmp/install-android-cli.sh
+
+RUN yes | android --sdk="$ANDROID_HOME" sdk install platform-tools
+
+RUN git config --global user.email "support@sst-ci.org" \
     && git config --global user.name "SST CI"
 
 FROM tools AS sdk
@@ -67,9 +71,9 @@ ENV ANDROID_PLATFORM_VERSION=$android_platform \
 
 RUN test -n "$ANDROID_PLATFORM_VERSION" \
     && test -n "$ANDROID_BUILD_TOOLS_VERSION" \
-    && yes | sdkmanager \
-        "platforms;android-$ANDROID_PLATFORM_VERSION" \
-        "build-tools;$ANDROID_BUILD_TOOLS_VERSION"
+    && yes | android --sdk="$ANDROID_HOME" sdk install \
+        "platforms/android-$ANDROID_PLATFORM_VERSION" \
+        "build-tools/$ANDROID_BUILD_TOOLS_VERSION"
 
 FROM sdk AS ndk
 
@@ -77,4 +81,4 @@ ARG android_ndk
 ENV ANDROID_NDK_VERSION=$android_ndk
 
 RUN test -n "$ANDROID_NDK_VERSION" \
-    && yes | sdkmanager "ndk;$ANDROID_NDK_VERSION"
+    && yes | android --sdk="$ANDROID_HOME" sdk install "ndk/$ANDROID_NDK_VERSION"

@@ -49,5 +49,5 @@ jobs:
             test -d "$ANDROID_HOME/platforms/android-${ANDROID_PLATFORM_VERSION}" &&
             test -d "$ANDROID_HOME/build-tools/${ANDROID_BUILD_TOOLS_VERSION}" &&
             test -d "$ANDROID_HOME/ndk/${ANDROID_NDK_VERSION}" &&
-            sdkmanager --version
+            android -V
           '

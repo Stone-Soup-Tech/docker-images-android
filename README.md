@@ -22,6 +22,9 @@ The example above mounts current working directory and runs a Gradle build.
 - The standalone `tools` image is currently disabled; the SDK and NDK images still
   use the internal command-line tools build stage.
 
+Images are published for `linux/amd64`. Android CLI and the Linux Android host
+tools are not currently distributed for ARM64 hosts.
+
 For reproducible builds, use an API tag such as `36` or `36-ndk`. The moving
 tags are updated after an automated version-update pull request is merged.
 

@@ -16,11 +16,6 @@ def child(element, name):
     return next((item for item in element if item.tag.rsplit("}", 1)[-1] == name), None)
 
 
-def text(element, name):
-    item = child(element, name)
-    return item.text.strip() if item is not None and item.text else ""
-
-
 def stable(package):
     channel = child(package, "channelRef")
     revision = child(package, "revision")
@@ -45,6 +40,11 @@ def latest(packages, pattern):
     if not matches:
         raise RuntimeError(f"No stable package matched {pattern.pattern}")
     return max(matches, key=lambda item: item[0])[1:]
+
+
+def text(element, name):
+    item = child(element, name)
+    return item.text.strip() if item is not None and item.text else ""
 
 
 def command_line_tools(packages):
@@ -90,6 +90,7 @@ def main():
     parser.add_argument("--versions-file", default="versions.yml")
     args = parser.parse_args()
 
+    versions_path = Path(args.versions_file)
     values = resolve(args.repository)
     output = """android_sdk:
   platform: "{}"
@@ -98,7 +99,7 @@ def main():
   command_line_tools: "{}"
   command_line_tools_sha1: "{}"
 """.format(*values)
-    Path(args.versions_file).write_text(output, encoding="utf-8")
+    versions_path.write_text(output, encoding="utf-8")
     print(f"Updated {args.versions_file}: platform {values[0]}, build-tools {values[1]}, NDK {values[2]}")
 
 
