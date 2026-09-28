@@ -16,7 +16,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Check for new stable Android versions
         run: python3 scripts/update_android_versions.py
