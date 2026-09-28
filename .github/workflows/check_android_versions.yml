@@ -1,0 +1,42 @@
+name: Check Android versions
+
+on:
+  schedule:
+    # Every 24 hours
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check_versions:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check for new stable Android versions
+        run: python3 scripts/update_android_versions.py
+
+      - name: Read resolved versions
+        id: versions
+        run: |
+          ruby -ryaml -e '
+            versions = YAML.load_file("versions.yml").fetch("android_sdk")
+            File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |output|
+              output.puts "platform=#{versions.fetch("platform")}" 
+              output.puts "ndk=#{versions.fetch("ndk")}" 
+            end
+          '
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: "chore: update Android SDK to ${{ steps.versions.outputs.platform }} and NDK to ${{ steps.versions.outputs.ndk }}"
+          title: "chore: update Android SDK to ${{ steps.versions.outputs.platform }} and NDK to ${{ steps.versions.outputs.ndk }}"
+          branch: chore/update-android-versions
+          delete-branch: true
+          reviewers: mihaiborcansst

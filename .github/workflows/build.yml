@@ -1,0 +1,53 @@
+name: Build Android images
+
+on:
+  pull_request:
+    paths:
+      - sdk/**
+      - versions.yml
+      - scripts/**
+      - .github/workflows/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read Android versions
+        id: versions
+        run: |
+          ruby -ryaml -e '
+            YAML.load_file("versions.yml").fetch("android_sdk").each do |key, value|
+              File.open(ENV.fetch("GITHUB_OUTPUT"), "a") { |output| output.puts "#{key}=#{value}" }
+            end
+          '
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build SDK with NDK
+        uses: docker/build-push-action@v7
+        with:
+          context: sdk
+          target: ndk
+          load: true
+          tags: android-sdk:test
+          build-args: |
+            command_line_tools=${{ steps.versions.outputs.command_line_tools }}
+            command_line_tools_sha1=${{ steps.versions.outputs.command_line_tools_sha1 }}
+            android_platform=${{ steps.versions.outputs.platform }}
+            android_build_tools=${{ steps.versions.outputs.build_tools }}
+            android_ndk=${{ steps.versions.outputs.ndk }}
+
+      - name: Smoke test installed packages
+        run: |
+          docker run --rm android-sdk:test sh -c '
+            test -d "$ANDROID_HOME/platforms/android-${ANDROID_PLATFORM_VERSION}" &&
+            test -d "$ANDROID_HOME/build-tools/${ANDROID_BUILD_TOOLS_VERSION}" &&
+            test -d "$ANDROID_HOME/ndk/${ANDROID_NDK_VERSION}" &&
+            sdkmanager --version
+          '
