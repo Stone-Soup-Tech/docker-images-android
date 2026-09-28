@@ -25,6 +25,7 @@ RUN test -n "$command_line_tools" \
         libsqlite3-dev \
         libstdc++6 \
         locales \
+        jq \
         openjdk-21-jdk \
         openssh-client \
         sqlite3 \

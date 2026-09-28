@@ -1,6 +1,6 @@
 android_sdk:
-  platform: "37.2"
-  build_tools: "37.0.0"
-  ndk: "30.0.16248370"
+  platform: "36"
+  build_tools: "36.0.0"
+  ndk: "27.3.13750724"
   command_line_tools: "16111833"
   command_line_tools_sha1: "e025545c62a8e64c7559119566a569fb1dec5f60"
