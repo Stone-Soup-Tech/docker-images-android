@@ -13,6 +13,8 @@ ENV ANDROID_HOME=/opt/android-sdk-linux \
 ENV ANDROID_SDK_ROOT=$ANDROID_HOME \
     PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools
 
+WORKDIR /opt
+
 RUN test -n "$command_line_tools" \
     && test -n "$command_line_tools_sha1" \
     && apt-get update \
@@ -21,15 +23,15 @@ RUN test -n "$command_line_tools" \
         build-essential \
         curl \
         git \
+        jq \
         lcov \
         libsqlite3-dev \
         libstdc++6 \
         locales \
-        jq \
         openjdk-21-jdk \
         openssh-client \
-        ruby-full \
         ruby-bundler \
+        ruby-full \
         sqlite3 \
         sudo \
         unzip \
@@ -41,27 +43,22 @@ RUN test -n "$command_line_tools" \
     && locale-gen \
     && update-locale LANG=en_US.UTF-8
 
-WORKDIR /opt
-
-RUN wget -q "https://dl.google.com/android/repository/commandlinetools-linux-${command_line_tools}_latest.zip" -O android-sdk-tools.zip \
-    && echo "${command_line_tools_sha1}  android-sdk-tools.zip" | sha1sum --check - \
+RUN wget -q "https://dl.google.com/android/repository/commandlinetools-linux-${command_line_tools}_latest.zip" -O /tmp/android-sdk-tools.zip \
+    && echo "${command_line_tools_sha1}  /tmp/android-sdk-tools.zip" | sha1sum --check - \
     && mkdir -p "$ANDROID_HOME/cmdline-tools" \
-    && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME/cmdline-tools" \
+    && unzip -q /tmp/android-sdk-tools.zip -d "$ANDROID_HOME/cmdline-tools" \
     && mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest" \
-    && rm android-sdk-tools.zip \
+    && rm /tmp/android-sdk-tools.zip \
     && chown -R root:root "$ANDROID_HOME"
 
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && mkdir -p /root/.android \
-    && touch /root/.android/repositories.cfg
-
-RUN curl -fsSL https://dl.google.com/android/cli/latest/linux_x86_64/install_root.sh -o /tmp/install-android-cli.sh \
+    && touch /root/.android/repositories.cfg \
+    && curl -fsSL https://dl.google.com/android/cli/latest/linux_x86_64/install_root.sh -o /tmp/install-android-cli.sh \
     && bash /tmp/install-android-cli.sh \
-    && rm /tmp/install-android-cli.sh
-
-RUN yes | android --sdk="$ANDROID_HOME" sdk install platform-tools
-
-RUN git config --global user.email "support@sst-ci.org" \
+    && rm /tmp/install-android-cli.sh \
+    && yes | android --sdk="$ANDROID_HOME" sdk install platform-tools \
+    && git config --global user.email "support@sst-ci.org" \
     && git config --global user.name "SST CI"
 
 FROM tools AS sdk
@@ -81,6 +78,7 @@ RUN test -n "$ANDROID_PLATFORM_VERSION" \
 FROM sdk AS ndk
 
 ARG android_ndk
+
 ENV ANDROID_NDK_VERSION=$android_ndk
 
 RUN test -n "$ANDROID_NDK_VERSION" \
